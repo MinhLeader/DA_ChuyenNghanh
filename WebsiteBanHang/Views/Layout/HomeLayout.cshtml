@@ -1,0 +1,136 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <title>@ViewBag.Title</title>
+    <link href="~/Content/css/bootstrap.css" rel="stylesheet" type="text/css" media="all">
+    <link href="~/Content/fontawesome/css/all.css" rel="stylesheet" type="text/css" media="all">
+    <link href="~/Content/fontawesome/css/all.min.css" rel="stylesheet" type="text/css" media="all">
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="~/Content/js/jquery.min.js"></script>
+    <!-- Custom Theme files -->
+    <!--theme-style-->
+    <link href="~/Content/css/Home_style.css" rel="stylesheet" type="text/css" media="all">
+    <!--//theme-style-->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="keywords" content="New Store Responsive web template, Bootstrap Web Templates, Flat Web Templates, Andriod Compatible web template,
+Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, SonyErricsson, Motorola web design">
+    <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+    <!--fonts-->
+    <link href="http://fonts.googleapis.com/css?family=Lato:100,300,400,700,900" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Roboto:400,100,300,500,700,900" rel="stylesheet" type="text/css"><!--//fonts-->
+    <!-- start menu -->
+    <link href="~/Content/css/memenu.css" rel="stylesheet" type="text/css" media="all">
+    <script type="text/javascript" src="~/Content/js/memenu.js"></script>
+    <script>$(document).ready(function () { $(".memenu").memenu(); });</script>
+    <script src="~/Content/js/simpleCart.min.js"></script>
+    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+</head>
+<body>
+    <!--header-->
+    <div class="header">
+        @Html.Partial("~/Views/Layout//HeaderTopPartial.cshtml")
+        <div class="container">
+            <div class="head-top">
+                <div class="logo">
+                    <a href="#"><img src="images/logo.png" alt=""></a>
+                </div>
+                @Html.Action("MenuPartial", "Home")
+
+                <div class="clearfix"> </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- Banner -->
+    <div class="banner">
+        <div class="container">
+            <script src="~/Content/js/responsiveslides.min.js"></script>
+            <script>
+                $(function () {
+                    $("#slider").responsiveSlides({
+                        auto: true,
+                        nav: true,
+                        speed: 500,
+                        namespace: "callbacks",
+                        pager: true,
+                    });
+                });
+            </script>
+            <div id="top" class="callbacks_container">
+                <ul class="rslides callbacks callbacks1" id="slider">
+                    <li>
+                        <div class="banner-text">
+                            <h3>Sản Phẩm Văn Phòng Phẩm Mới Nhất</h3>
+                            <p>Khám phá những sản phẩm văn phòng phẩm mới nhất từ sổ tay, bút bi, đến giấy in chất lượng cao.</p>
+                            <a href="@Url.Action("SanPham","SanPham",new {@MaLoaiSP = 1, @MaNSX = 2})">Xem thêm</a>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="banner-text">
+                            <h3>Máy In và Phụ Kiện Văn Phòng</h3>
+                            <p>Tìm kiếm các thiết bị văn phòng như máy in, máy fax và các phụ kiện hỗ trợ.</p>
+                            <a href="@Url.Action("SanPham","SanPham",new {@MaLoaiSP = 4 , @MaNSX = 3})">Xem thêm</a>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="banner-text">
+                            <h3>Bút Bi Cao Cấp</h3>
+                            <p>Chất lượng vượt trội cho những ai yêu cầu sự tinh tế và độ bền trong công việc.</p>
+                            <a href="@Url.Action("SanPham","SanPham",new {@MaLoaiSP = 2 , @MaNSX = 1})">Xem thêm</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!--content-->
+    <div class="content">
+        @RenderBody()
+
+    </div>
+    <!-- #region Phần footer -->
+    <div class="footer">
+        <div class="container">
+            <div class="footer-top-at">
+                <div class="col-md-4 amet-sed">
+                    <h4>Thông Tin Chung</h4>
+                    <ul class="nav-bottom">
+                        <li><a href="#">Giới Thiệu Về Văn Phòng Phẩm</a></li>
+                        <li><a href="#">Tin Tuyển Dụng</a></li>
+                        <li><a href="contact.html">Tin Tức Văn Phòng</a></li>
+                        <li><a href="#">Khuyến Mãi Văn Phòng Phẩm</a></li>
+                        <li><a href="#">Chính Sách Bảo Hành</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 amet-sed">
+                    <h4>Hỗ Trợ Khách Hàng</h4>
+                    <p>Tư vấn và hỗ trợ mua hàng</p>
+                    <p>Chính sách vận chuyển</p>
+                    <p>Chính sách đổi trả</p>
+                    <ul class="social">
+                        <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
+                        <li><a href="#"><i class="fab fa-twitter"></i></a></li>
+                        <li><a href="#"><i class="fab fa-linkedin-in"></i></a></li>
+                        <li><a href="#"><i class="fab fa-instagram"></i></a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 amet-sed">
+                    <h4>Nhận Thông Tin Khuyến Mãi</h4>
+                    <p>Đăng ký để nhận thông tin khuyến mãi và ưu đãi đặc biệt từ chúng tôi.</p>
+                    <form>
+                        <input type="text" placeholder="Email@gmail.com" onfocus="this.value='';" onblur="if (this.value == '') {this.value ='';}">
+                        <input type="submit" value="Gửi">
+                    </form>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+    <!-- #endregion -->
+</body>
+</html>
