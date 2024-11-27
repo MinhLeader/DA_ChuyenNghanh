@@ -3,17 +3,66 @@
 @{
     ViewBag.Title = "Quản lý sản phẩm";
     Layout = "~/Views/Layout/AdminLayout.cshtml";
-
 }
-
 <h2>@ViewBag.Title</h2>
 <div class="card">
     <div class="card-body">
+        @using (Html.BeginForm("Index", "QuanLySanPham", FormMethod.Get, new { @class = "form-inline mb-3" }))
+        {
+            <div class="row">
+                <div class="col-md-4">
+                    @Html.TextBox("searchTerm", null, new { @class = "form-control mr-2", placeholder = "Nhập tên hoặc mã sản phẩm" })
+                </div>
+                <div class="col-md-3">
+                    @Html.DropDownList("maLoaiSP", ViewBag.MaLoaiSP as SelectList, "-- Chọn loại sản phẩm --", new { @class = "form-control mr-2" })
+                </div>
+                <div class="col-md-3">
+                    @Html.DropDownList("maNSX", ViewBag.MaNSX as SelectList, "-- Chọn nhà sản xuất --", new { @class = "form-control mr-2" })
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                    <a href="@Url.Action("Index")" class="btn btn-secondary">Đặt lại</a>
+                </div>
+            </div>
+        }
+
         <p>
-            @Html.ActionLink("Thêm mới", "TaoMoi", null, htmlAttributes: new { @class = "btn btn-sm btn-warning font-weight-bold " })
+            @Html.ActionLink("Thêm mới", "TaoMoi", null, htmlAttributes: new { @class = "btn btn-sm btn-warning font-weight-bold" })
         </p>
-        <div id="divPartialView">
-            @Html.Partial("_IndexPartial")
-        </div>
+
+        @{
+            WebGrid grid = new WebGrid(source: Model, rowsPerPage: 10); //khởi tạo control webgird
+        }
+        @if (grid != null)
+        {
+            <div id="list" class="table-responsive">
+                @grid.GetHtml(
+                tableStyle: "table table-bordered table-hover",
+                headerStyle: "",
+                footerStyle: "text-center",
+                numericLinksCount: 10,
+                mode: WebGridPagerModes.All, firstText: "Trang đầu", lastText: "Trang cuối",
+                columns: grid.Columns(
+                    grid.Column("MaSP", "Mã SP"),
+                    grid.Column("TenSP", "Tên SP"),
+                    grid.Column("HinhAnh", "Hình ảnh", format: p => Html.Raw("<img width=\"150\" height=\"150\" src=\"../Content/HinhAnhSP/" + p.HinhAnh + "\">")),
+                    grid.Column("SoLuongTon", "Tồn kho"),
+                    grid.Column("DonGia", "Đơn giá", format: p => p.DonGia.ToString("#,##")),
+                    grid.Column("LoaiSanPham.TenLoai", "Loại"),
+                    grid.Column("NhaSanXuat.TenNSX", "NSX"),
+                    grid.Column(format: p => Html.ActionLink("Chỉnh sửa", "ChinhSua", new { id = p.MaSP })),
+                    grid.Column(format: p => Html.ActionLink("Xóa", "Xoa", new { id = p.MaSP })),
+                    grid.Column(format: p => Html.ActionLink("Upload Hình", "UploadHinh", new { id = p.MaSP }))
+                )
+                )
+            </div>
+        }
+
+        @if (!Model.Any())
+        {
+            <div class="alert alert-info text-center">
+                Không có sản phẩm nào phù hợp với tiêu chí tìm kiếm.
+            </div>
+        }
     </div>
 </div>

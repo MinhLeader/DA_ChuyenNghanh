@@ -1,78 +1,248 @@
-﻿@using WebsiteBanHang.Models
+﻿@using WebsiteBanHang.Models;
 @model IEnumerable<SanPham>
 
-
 <style>
-    .b-from-top {
-        background: rgba(0, 0, 0, 0.64); 
+.promo-showcase {
+    padding: 3rem 1rem;
+    background: linear-gradient(to bottom, #fff, #ffffff);
+}
+
+.promo-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    position: relative;
+}
+
+.promo-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(45deg, #ff6b6b, #ffa502);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.promo-subtitle {
+    font-size: 1.1rem;
+    color: #6c757d;
+    margin-bottom: 2rem;
+}
+
+.decorative-line {
+    width: 150px;
+    height: 4px;
+    background: linear-gradient(45deg, #ff6b6b, #ffa502);
+    margin: 0 auto;
+    border-radius: 2px;
+}
+
+.promo-container {
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    gap: 1.5rem;
+    padding: 1rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.promo-item {
+    position: relative;
+    background: #ffffff;
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+}
+
+.promo-item:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+}
+
+.promo-image-wrapper {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 4/3;
+}
+
+.promo-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.promo-item:hover .promo-image {
+    transform: scale(1.1);
+}
+
+.promo-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(0,0,0,0.2),
+        rgba(0,0,0,0.8)
+    );
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    display: flex;
+    align-items: flex-end;
+    padding: 2rem;
+}
+
+.promo-item:hover .promo-overlay {
+    opacity: 1;
+}
+
+.promo-details {
+    padding: 1.5rem;
+    background: #ffffff;
+    position: relative;
+}
+
+.discount-badge {
+    position: absolute;
+    top: -15px;
+    right: 15px;
+    background: linear-gradient(45deg, #ff6b6b, #ffa502);
+    color: white;
+    padding: 0.5rem 1.2rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    box-shadow: 0 4px 10px rgba(255, 107, 107, 0.3);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    animation: pulse 2s infinite;
+}
+
+.original-price {
+    text-decoration: line-through;
+    color: #999;
+    font-size: 0.9rem;
+    margin-right: 0.5rem;
+}
+
+.promo-price {
+    color: #ff6b6b;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.promo-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0.5rem 0;
+    color: #333;
+}
+
+.promo-name a {
+    text-decoration: none;
+    color: inherit;
+    transition: color 0.3s ease;
+}
+
+.promo-description {
+    color: white;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.4s ease;
+}
+
+.promo-item:hover .promo-description {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.view-promo {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background: white;
+    color: #ff6b6b;
+    text-decoration: none;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.view-promo:hover {
+    background: #ff6b6b;
+    color: white;
+    transform: translateX(5px);
+}
+
+@@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@@media (max-width: 768px) {
+    .promo-title {
+        font-size: 2rem;
     }
-    .content-top-bottom .col-md-6 h3 a {
-        text-decoration: none;
-        color: black;
+
+    .promo-container {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
     }
-        .content-top-bottom .col-md-6 h3 a:hover {
-            color: rgba(239, 95, 33);
-        }
+
+    .promo-details {
+        padding: 1rem;
+    }
+
+    .discount-badge {
+        font-size: 0.85rem;
+        padding: 0.4rem 1rem;
+    }
+}
 </style>
-<div class="content-top-bottom">
-    <!--dùng phương thức linq Lấy ra sp đầu tiên trong model,r lấy tên loại thông qua liên kết vs bảng loại sp-->
-    <h2><span>@Model.First().LoaiSanPham.TenLoai</span><span> mới nhất</span></h2>
-    <div class="col-md-6 men">
-        <a href="@Url.RouteUrl("XemChiTiet",new {@id= Model.ElementAt(1).MaSP, @tensp = Model.ElementAt(1).TenSP })" class="b-link-stripe b-animate-go  thickbox">
-            <img class="img-responsive" src="@Url.Content("~/Content/HinhAnhSP/"+Model.ElementAt(1).HinhAnh)" style="width:540px;height:429px" alt="">
-            <!--Lấy ra hình ảnh từ model tại phần tử 1-->
-            <div class="b-wrapper">
-                <h3 class="b-animate b-from-top top-in   b-delay03 ">
-                    <span>@Html.Raw(Model.ElementAt(1).Chitiet)</span>
-                </h3>
-            </div>
-        </a>
-        <h3><a href="@Url.RouteUrl("XemChiTiet",new {@id= Model.ElementAt(1).MaSP, @tensp = Model.ElementAt(1).TenSP })">@Html.Raw(Model.ElementAt(1).TenSP)</a></h3>
 
+<section class="promo-showcase">
+    <div class="promo-header">
+        <h1 class="promo-title">Khuyến Mãi Đặc Biệt</h1>
+        <p class="promo-subtitle">Ưu đãi hấp dẫn - Thời gian có hạn</p>
+        <div class="decorative-line"></div>
     </div>
-    <div class="col-md-6">
-        <div class="col-md1 ">
-            <a href="@Url.RouteUrl("XemChiTiet",new {@id= Model.ElementAt(4).MaSP, @tensp = Model.ElementAt(4).TenSP })" class="b-link-stripe b-animate-go  thickbox">
-                <img class="img-responsive" src="@Url.Content("~/Content/HinhAnhSP/"+Model.ElementAt(4).HinhAnh)" alt="" style="width:540px;height:203px">
-                <div class="b-wrapper">
-                    <h3 class="b-animate b-from-top top-in1   b-delay03 ">
-                        <span>@Html.Raw(Model.ElementAt(4).Chitiet)</span>
-                    </h3>
+
+    <div class="promo-container">
+        @foreach (var item in Model.Take(4))
+        {
+            <article class="promo-item">
+                <div class="promo-image-wrapper">
+                    <img class="promo-image"
+                         src="@Url.Content("~/Content/HinhAnhSP/"+item.HinhAnh)"
+                         alt="@item.TenSP">
+                    <div class="promo-overlay">
+                        <div class="promo-description">
+                            @Html.Raw(item.Chitiet)
+                            <a href="@Url.RouteUrl("XemChiTiet",new {@id=item.MaSP, @tensp = item.TenSP })"
+                               class="view-promo">
+                                Xem chi tiết →
+                            </a>
+                        </div>
+                    </div>
                 </div>
-            </a>
-
-        </div>
-        <div class="col-md2">
-            <div class="col-md-6 men1">
-                <a href="@Url.RouteUrl("XemChiTiet",new {@id= Model.ElementAt(0).MaSP, @tensp = Model.ElementAt(0).TenSP })" class="b-link-stripe b-animate-go  thickbox">
-                    <img class="img-responsive" src="@Url.Content("~/Content/HinhAnhSP/"+Model.ElementAt(0).HinhAnh)" alt="" style="width:255px;height:196px">
-                    <div class="b-wrapper">
-                        <h3 class="b-animate b-from-top top-in2   b-delay03 ">
-                            <span>@Html.Raw(Model.ElementAt(0).Chitiet)</span>
-                        </h3>
-                    </div>
-                </a>
-                <h3><a href="@Url.RouteUrl("XemChiTiet",new {@id= Model.ElementAt(0).MaSP, @tensp = Model.ElementAt(0).TenSP })">@Html.Raw(Model.ElementAt(0).TenSP.Substring(0, 17))</a></h3>
-
-            </div>
-            <div class="col-md-6 men2">
-                <a href="@Url.RouteUrl("XemChiTiet",new {@id= Model.ElementAt(2).MaSP, @tensp = Model.ElementAt(2).TenSP })" class="b-link-stripe b-animate-go  thickbox">
-                    <img class="img-responsive" src="@Url.Content("~/Content/HinhAnhSP/"+Model.ElementAt(2).HinhAnh)" alt="" style="width: 255px; height: 196px">
-                    <div class="b-wrapper">
-                        <h3 class="b-animate b-from-top top-in2   b-delay03 ">
-                            <span>@Html.Raw(Model.ElementAt(2).Chitiet)</span>
-                        </h3>
-                    </div>
-                </a>
-                <h3>
-                    <a href="@Url.RouteUrl("XemChiTiet",new {@id= Model.ElementAt(2).MaSP, @tensp = Model.ElementAt(2).TenSP })">
-                        @Html.Raw(Model.ElementAt(2).TenSP.Substring(0, 17))
-                    </a>
-                </h3>
-
-            </div>
-            <div class="clearfix"> </div>
-        </div>
+                <div class="promo-details">
+                    <span class="discount-badge">-30%</span>
+                    <h2 class="promo-name">
+                        <a href="@Url.RouteUrl("XemChiTiet",new {@id=item.MaSP, @tensp = item.TenSP })">
+                            @item.TenSP
+                        </a>
+                    </h2>
+                   
+                </div>
+            </article>
+        }
     </div>
-    <div class="clearfix"> </div>
-</div>
+</section>

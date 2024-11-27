@@ -4,5 +4,34 @@
     Layout = "~/Views/Layout/_LayoutCommon.cshtml";
 }
 
-<h2>Hoàn tất đặt hàng</h2>
+<div class="success-page" style="text-align: center; padding: 20px; background-color: #fff;">
+    <!-- Icon thành công -->
+    <div style="margin-bottom: 20px;">
+        <img src="~/Content/images/check.png" alt="Thành Công" style="width: 80px; height: 80px;">
+    </div>
+
+    <!-- Tiêu đề -->
+    <h2 style="color: #ff5722; font-size: 24px; font-weight: bold;">Đặt hàng thành công!</h2>
+
+    <!-- Thông điệp -->
+    <p style="color: #444; font-size: 16px; margin: 10px 0;">
+        Cảm ơn bạn đã đặt hàng tại cửa hàng của chúng tôi! Mã đơn hàng của bạn là
+        <strong style="color: #ff5722;">#DH123456</strong>.
+    </p>
+
+    <!-- Lưu ý -->
+    <p style="font-size: 14px; color: #777;">
+        Chúng tôi sẽ bảo vệ quyền lợi của bạn - chỉ nhận hàng và thanh toán khi đơn hàng ở trạng thái <strong>"Đang giao hàng"</strong>.
+    </p>
+
+    <!-- Nút điều hướng -->
+    <div style="margin-top: 20px;">
+        <a href="/Home/Index" class="btn btn-primary" style="margin-right: 10px; background-color: #ff5722; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+            Trang chủ
+        </a>
+        <a href="/Order/History" class="btn btn-secondary" style="background-color: #4caf50; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+            Xem đơn hàng
+        </a>
+    </div>
+</div>
 

@@ -13,10 +13,39 @@ namespace WebsiteBanHang.Controllers
     {
         QuanLyBanHangEntities db = new QuanLyBanHangEntities();
         // GET: QuanLySanPham
-        public ActionResult Index()
+        public ActionResult Index(string searchTerm, int? maLoaiSP, int? maNSX)
         {
+            // Bắt đầu truy vấn từ các sản phẩm chưa bị xóa
+            var query = db.SanPhams.Where(n => n.DaXoa == false).AsQueryable();
 
-            return View(db.SanPhams.Where(n => n.DaXoa == false).OrderBy(n => n.MaSP));
+            // Tìm kiếm theo từ khóa
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                query = query.Where(n =>
+                    n.TenSP.Contains(searchTerm) ||
+                    n.MaSP.ToString().Contains(searchTerm)
+                );
+            }
+
+            // Lọc theo loại sản phẩm
+            if (maLoaiSP.HasValue)
+            {
+                query = query.Where(n => n.MaLoaiSP == maLoaiSP.Value);
+            }
+
+            // Lọc theo nhà sản xuất
+            if (maNSX.HasValue)
+            {
+                query = query.Where(n => n.MaNSX == maNSX.Value);
+            }
+
+            // Chuẩn bị ViewBag cho các dropdown
+            ViewBag.MaLoaiSP = new SelectList(db.LoaiSanPhams.OrderBy(n => n.TenLoai), "MaLoaiSP", "TenLoai");
+            ViewBag.MaNSX = new SelectList(db.NhaSanXuats.OrderBy(n => n.TenNSX), "MaNSX", "TenNSX");
+
+            // Sắp xếp và trả về kết quả
+            var result = query.OrderBy(n => n.MaSP).ToList();
+            return View(result);
         }
 
         [HttpGet]

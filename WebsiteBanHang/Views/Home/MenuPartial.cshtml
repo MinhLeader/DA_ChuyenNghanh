@@ -1,62 +1,192 @@
-﻿    @using WebsiteBanHang.Models
-    @model IEnumerable<SanPham>
+﻿@using WebsiteBanHang.Models
+@model IEnumerable<SanPham>
 
-
-
-    <div class=" h_menu4">
-        <ul class="memenu skyblue">
-            <li class="showhide" style="display:none;"><span class="title">Menu</span><span class="icon1"></span><span class="icon2"></span></li>
-            <li class="active grid" style="display:inline;"><a class="color8" href="@Url.Action("Index","Home")">Home</a></li>
-            <!-- Url.action trả về kiểu đường dẫn url tương ứng với controller và action : ~/Controllers/Home/Index-->
-            @foreach (var groupItem in Model.GroupBy(n => n.LoaiSanPham))  //gom nhóm lại theo từng loại sp( là gom nhóm lại những cái trùng nhau)
+<div class="header-nav">
+    <div class="container">
+        <ul class="nav-menu">
+            <li class="nav-item active">
+                <a href="@Url.Action("Index","Home")" class="nav-link">Home</a>
+            </li>
+            @foreach (var groupItem in Model.GroupBy(n => n.LoaiSanPham))
             {
-                if (groupItem.Key != null)  //key đại diện cho thuộc tính đc gom nhóm
+                if (groupItem.Key != null)
                 {
-                    <li style="display:inline;">
-                        <a class="color1" href="@Url.Action("LoaiSanPham","SanPham",new { @MaLoaiSP = groupItem.Key.MaLoaiSP})">@groupItem.Key.TenLoai</a>
-                        <div class="mepanel">
-                            <div class="row">
-                                <div class="col1">
-                                    <div class="h_nav">
-                                        <ul>
-                                            @foreach (var item in groupItem.GroupBy(n => n.NhaSanXuat))
-                                            {
-                                                if (item.Key != null)   //key đại diện cho thuộc tính đc gom nhóm
-                                                {
-                                                    <li><a href="@Url.Action("SanPham","SanPham",new { @MaLoaiSP=groupItem.Key.MaLoaiSP, @MaNSX=item.Key.MaNSX})">@item.Key.TenNSX</a></li>
-                                                }
-                                            }
-                                        </ul>
-                                    </div>
-                                </div>
+                    <li class="nav-item has-dropdown">
+                        <a href="@Url.Action("LoaiSanPham","SanPham",new { @MaLoaiSP = groupItem.Key.MaLoaiSP})"
+                           class="nav-link">@groupItem.Key.TenLoai</a>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-content">
+                                <ul class="dropdown-list">
+                                    @foreach (var item in groupItem.GroupBy(n => n.NhaSanXuat))
+                                    {
+                                        if (item.Key != null)
+                                        {
+                                            <li class="dropdown-item">
+                                                <a href="@Url.Action("SanPham","SanPham",new { @MaLoaiSP=groupItem.Key.MaLoaiSP, @MaNSX=item.Key.MaNSX})">
+                                                    @item.Key.TenNSX
+                                                </a>
+                                            </li>
+                                        }
+                                    }
+                                </ul>
                             </div>
                         </div>
                     </li>
                 }
             }
-            <li class="grid">
-                <a class="color2" href="#">	Thương Hiệu</a>
-                <div class="mepanel">
-                    <div class="row">
-                        @foreach (var groupItem in Model.GroupBy(n => n.LoaiSanPham))
-                        {
-                            if (groupItem.Key != null)
+            <li class="nav-item has-dropdown">
+                <a href="#" class="nav-link">Thương Hiệu</a>
+                <div class="dropdown-menu brands-menu">
+                    <div class="dropdown-content">
+                        <div class="brands-grid">
+                            @foreach (var groupItem in Model.GroupBy(n => n.LoaiSanPham))
                             {
-                                <div class="col1">
-                                    <div class="h_nav">
-                                        <h4>@groupItem.Key.TenLoai</h4>
-                                        <ul>
+                                if (groupItem.Key != null)
+                                {
+                                    <div class="brand-category">
+                                        <h4 class="category-title">@groupItem.Key.TenLoai</h4>
+                                        <ul class="brand-list">
                                             @foreach (var item in groupItem.GroupBy(n => n.NhaSanXuat))
                                             {
-                                                <li><a href="@Url.Action("SanPham","SanPham",new { @MaLoaiSP=groupItem.Key.MaLoaiSP, @MaNSX=item.Key.MaNSX})">@item.Key.TenNSX</a></li>
+                                                <li class="brand-item">
+                                                    <a href="@Url.Action("SanPham","SanPham",new { @MaLoaiSP=groupItem.Key.MaLoaiSP, @MaNSX=item.Key.MaNSX})">
+                                                        @item.Key.TenNSX
+                                                    </a>
+                                                </li>
                                             }
                                         </ul>
                                     </div>
-                                </div>
+                                }
                             }
-                        }
+                        </div>
                     </div>
                 </div>
             </li>
         </ul>
     </div>
+</div>
+
+<style>
+    .header-nav {
+/*        background: #fff;*/
+/*        border-bottom: 1px solid #e0e0e0;*/
+        box-shadow: 0 2px 5px rgba(0, 0, 0, .0001);
+    }
+
+    .nav-menu {
+        display: flex;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .nav-item {
+        position: relative;
+    }
+
+    .nav-link {
+        display: block;
+        padding: 15px 20px;
+        color: #333;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+        .nav-link:hover {
+            color: #4A90E2;
+        }
+
+    /* Dropdown Styles */
+    .has-dropdown:hover .dropdown-menu {
+        display: block;
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        min-width: 200px;
+        background: #fff;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        border-radius: 4px;
+        display: none;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(10px);
+        transition: all 0.3s ease;
+        z-index: 1000;
+    }
+
+    .brands-menu {
+        width: 600px;
+        left: -200px;
+    }
+
+    .dropdown-content {
+        padding: 15px;
+    }
+
+    .dropdown-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .dropdown-item {
+        padding: 8px 0;
+    }
+
+        .dropdown-item a {
+            color: #666;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+            .dropdown-item a:hover {
+                color: #4A90E2;
+            }
+
+    /* Brands Grid Layout */
+    .brands-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+
+    .category-title {
+        color: #333;
+        font-size: 16px;
+        margin-bottom: 10px;
+        padding-bottom: 5px;
+        border-bottom: 2px solid #4A90E2;
+    }
+
+    .brand-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .brand-item {
+        padding: 5px 0;
+    }
+
+        .brand-item a {
+            color: #666;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+            .brand-item a:hover {
+                color: #4A90E2;
+            }
+
+    /* Active State */
+    .nav-item.active .nav-link {
+        color: #4A90E2;
+        font-weight: 500;
+    }
+</style>

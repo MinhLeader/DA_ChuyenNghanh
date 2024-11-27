@@ -29,141 +29,233 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
     <script src="~/Content/ProductLayout/js/main.js"></script>
     <script src="~/Content/ProductLayout/js/simpleCart.min.js"></script>
     <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+
+    <style>
+        .sidebar {
+/*            width: 280px;*/
+            font-family: system-ui, -apple-system, sans-serif;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 15px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        /* Top Brands */
+        .brands-title {
+            color: #2563eb;
+        }
+
+        .brand-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+            .brand-list li {
+                margin-bottom: 10px;
+            }
+
+            .brand-list a {
+                display: flex;
+                align-items: center;
+                color: #4b5563;
+                text-decoration: none;
+                transition: color 0.2s;
+                font-size: 14px;
+            }
+
+                .brand-list a:hover {
+                    color: #2563eb;
+                }
+
+                .brand-list a:before {
+                    content: "›";
+                    margin-right: 8px;
+                    font-size: 16px;
+                }
+
+        /* Categories */
+        .categories-title {
+            color: #16a34a;
+        }
+
+        .category-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .category-tag {
+            background: #f3f4f6;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 13px;
+            color: #4b5563;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+            .category-tag:hover {
+                background: #e5e7eb;
+            }
+
+        /* Best Sellers */
+        .bestsellers-title {
+            color: #eab308;
+        }
+
+        .product-card {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+            .product-card:last-child {
+                margin-bottom: 0;
+                padding-bottom: 0;
+                border-bottom: none;
+            }
+
+        .product-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .product-info h4 {
+            margin: 0 0 4px 0;
+            font-size: 14px;
+            color: #1f2937;
+        }
+
+        .product-price {
+            color: #ef4444;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* Icons */
+        .icon {
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+        }
+
+        .icon-store {
+            color: #2563eb;
+        }
+
+        .icon-tag {
+            color: #16a34a;
+        }
+
+        .icon-star {
+            color: #eab308;
+        }
+    </style>
 </head>
 <body>
     <!--header-->
     <div class="header">
         @Html.Partial("~/Views/Layout//HeaderTopPartial.cshtml")
-        <div class="container">
+        <!--<div class="container">
             <div class="head-top">
                 <div class="logo">
                     <a href="index.html"><img src="" alt=""></a>
-                </div>
-                @Html.Action("MenuPartial", "Home")
+                </div>-->
+                @*@Html.Action("MenuPartial", "Home")*@
 
-                <div class="clearfix"> </div>
+                <!--<div class="clearfix"> </div>
             </div>
-        </div>
+        </div>-->
 
     </div>
 
 
     <!--content-->
     <!---->
+    @RenderBody()
     <div class="product">
         <div class="container">
-            <div class="col-md-3 product-price">
-
-                <div class=" rsidebar span_1_of_left">
-                    <div class="of-left">
-                        <h3 class="cate">Hãng bán chạy nhất</h3>
-                    </div>
-                    <ul class="menu">
-                        <li class="item1">
-                            <a href="#">Puma </a>
-                        </li>
-                        <li class="item2">
-                            <a href="#">Bitis</a>
-                        </li>
-                        <li class="item3">
-                            <a href="#">LV</a>
-                        </li>
-                        <li class="item4">
-                            <a href="#">Vans</a>
-                        </li>
-
+            <div class="sidebar">
+                <!-- Top Brands Section -->
+                <div class="section">
+                    <h3 class="section-title brands-title">
+                        <svg class="icon icon-store" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                        Hãng bán chạy nhất
+                    </h3>
+                    <ul class="brand-list">
+                        <li><a href="#">Thiên Long</a></li>
+                        <li><a href="#">Casio</a></li>
+                        <li><a href="#">Pentel</a></li>
+                        <li><a href="#">Eras</a></li>
                     </ul>
                 </div>
-                <!--initiate accordion-->
-                <script type="text/javascript">
-                    $(function () {
-                        var menu_ul = $('.menu > li > ul'),
-                            menu_a = $('.menu > li > a');
-                        menu_ul.hide();
-                        menu_a.click(function (e) {
-                            e.preventDefault();
-                            if (!$(this).hasClass('active')) {
-                                menu_a.removeClass('active');
-                                menu_ul.filter(':visible').slideUp('normal');
-                                $(this).addClass('active').next().stop(true, true).slideDown('normal');
-                            } else {
-                                $(this).removeClass('active');
-                                $(this).next().stop(true, true).slideUp('normal');
-                            }
-                        });
 
-                    });
-                </script>
-                <!---->
-                <div class="sellers">
-                    <div class="of-left-in">
-                        <h3 class="tag">BRANDS</h3>
+                <!-- Categories Section -->
+                <div class="section">
+                    <h3 class="section-title categories-title">
+                        <svg class="icon icon-tag" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                        </svg>
+                        Danh Mục Sản Phẩm
+                    </h3>
+                    <div class="category-tags">
+                        <a href="#" class="category-tag">Bút bi</a>
+                        <a href="#" class="category-tag">Bút chì</a>
+                        <a href="#" class="category-tag">Vở</a>
+                        <a href="#" class="category-tag">Kẹp</a>
+                        <a href="#" class="category-tag">Giấy</a>
+                        <a href="#" class="category-tag">Sổ</a>
+                        <a href="#" class="category-tag">Nhãn dán</a>
+                        <a href="#" class="category-tag">Sticker</a>
+                        <a href="#" class="category-tag">Thước</a>
+                        <a href="#" class="category-tag">Bút ký</a>
                     </div>
-                    <div class="tags">
-                        <ul>
-                            <li><a href="#">Vans</a></li>
-                            <li><a href="#">MWC</a></li>
-                            <li><a href="#">Bitis</a></li>
-                            <li><a href="#">Nike</a></li>
-                            <li><a href="#">Puma</a></li>
-                            <li><a href="#">Balen</a></li>
-                            <li><a href="#">Conver</a></li>
-                            <li><a href="#">NB</a></li>
-                            <li><a href="#">LV</a></li>
-                            <li><a href="#">VN</a></li>
-                            <li><a href="#">HQ</a></li>
-                            <li><a href="#">China</a></li>
-
-                            <div class="clearfix"> </div>
-                        </ul>
-
-                    </div>
-
-                </div>
-                <!---->
-                <div class="product-bottom">
-                    <div class="of-left-in">
-                        <h3 class="best">Bán chạy</h3>
-                    </div>
-                    <div class="product-go">
-                        <div class=" fashion-grid">
-                            <a href="#"><img class="img-responsive " src="~/Content/HinhAnhSP/aa.jpg" alt=""></a>
-
-                        </div>
-                        <div class=" fashion-grid1">
-                            <h6 class="best2">
-                                <a href="#">
-                                    Vans
-                                </a>
-                            </h6>
-
-                            <span class=" price-in1"> 3000000</span>
-                        </div>
-
-                        <div class="clearfix"> </div>
-                    </div>
-                    <div class="product-go">
-                        <div class=" fashion-grid">
-                            <a href="#"><img class="img-responsive " src="~/Content/HinhAnhSP/a4.jpg" alt=""></a>
-
-                        </div>
-                        <div class="fashion-grid1">
-                            <h6 class="best2">
-                                <a href="#">
-                                    Giày tây
-                                </a>
-                            </h6>
-
-                            <span class=" price-in1"> 1300000</span>
-                        </div>
-
-                        <div class="clearfix"> </div>
-                    </div>
-
                 </div>
 
+                <!-- Best Sellers Section -->
+                <div class="section">
+                    <h3 class="section-title bestsellers-title">
+                        <svg class="icon icon-star" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                        </svg>
+                        Bán chạy
+                    </h3>
+                    <div class="product-card">
+                        <img src="~/Content/images/butxoa.jpg" alt="Bút Xóa" class="product-image">
+                        <div class="product-info">
+                            <h4>Bút Xóa</h4>
+                            <span class="product-price">30,000 đ</span>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <img src="~/Content/images/rich.jpg" alt="Sách Nghĩ giàu & làm giàu" class="product-image">
+                        <div class="product-info">
+                            <h4>Sách Nghĩ giàu & làm giàu</h4>
+                            <span class="product-price">130,000 đ</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            @RenderBody()
+
 
 
             <div class="clearfix"> </div>

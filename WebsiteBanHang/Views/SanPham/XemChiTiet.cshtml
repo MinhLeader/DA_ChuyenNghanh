@@ -5,41 +5,46 @@
     Layout = "~/Views/Layout/ProductLayout.cshtml";
 }
 
-<div class="col-md-9 product-price1" style="text-align:left;">
+<div class="col-md-9 product-price1">
     <div class="col-md-5 single-top">
-        <div class="flexslider">
-            <ul class="slides">
-                <li data-thumb="@Url.Content("~/Content/HinhAnhSP/"+ Model.HinhAnh1)">
-                    <img src="@Url.Content("~/Content/HinhAnhSP/"+Model.HinhAnh1)" />
-                </li>
-                <li data-thumb="@Url.Content("~/Content/HinhAnhSP/"+Model.HinhAnh2)">
-                    <img src="@Url.Content("~/Content/HinhAnhSP/"+Model.HinhAnh2)" />
-                </li>
-                <li data-thumb="@Url.Content("~/Content/HinhAnhSP/"+Model.HinhAnh3)">
-                    <img src="@Url.Content("~/Content/HinhAnhSP/"+Model.HinhAnh3)" />
-                </li>
-                <li data-thumb="@Url.Content("~/Content/HinhAnhSP/"+Model.HinhAnh4)">
-                    <img src="@Url.Content("~/Content/HinhAnhSP/"+Model.HinhAnh4)" />
-                </li>
-            </ul>
+        <!-- Main Image Container -->
+        <div class="product-image-container" style="position: relative;">
+            <!-- Main Image -->
+            <div class="product-image" style="position: relative; width: 100%; height: auto; overflow: hidden; border: 1px solid #ddd;">
+                <img src="@Url.Content("~/Content/HinhAnhSP/"+Model.HinhAnh1)"
+                     class="main-image"
+                     style="width: 100%; height: 100%; object-fit: contain;" />
+
+                <!-- Navigation Arrows -->
+                <div class="nav-arrows" style="position: absolute; top: 50%; width: 100%; transform: translateY(-50%); display: flex; justify-content: space-between; padding: 0 10px;">
+                    <button onclick="changeImage(-1)" class="nav-arrow" style="background: rgba(0,0,0,0.5); color: white; border: none; padding: 10px 15px; cursor: pointer; border-radius: 3px;">❮</button>
+                    <button onclick="changeImage(1)" class="nav-arrow" style="background: rgba(0,0,0,0.5); color: white; border: none; padding: 10px 15px; cursor: pointer; border-radius: 3px;">❯</button>
+                </div>
+            </div>
         </div>
 
-        <script defer src="~/Content/ProductLayout/js/jquery.flexslider.js"></script>
-        <link rel="stylesheet" href="~/Content/ProductLayout/css/flexslider.css" type="text/css" media="screen" />
-
-        <script>
-            // Can also be used with $(document).ready()
-            $(window).load(function () {
-                $('.flexslider').flexslider({
-                    animation: "slide",
-                    controlNav: "thumbnails"
-                });
-            });
-        </script>
+        <!-- Thumbnails -->
+        <div class="product-thumbnails" style="display: flex; gap: 10px; margin-top: 15px; justify-content: center;">
+            @{
+                var images = new[] { Model.HinhAnh1, Model.HinhAnh2, Model.HinhAnh3, Model.HinhAnh4 };
+                for (int i = 0; i < images.Length; i++)
+                {
+                    if (!string.IsNullOrEmpty(images[i]))
+                    {
+                        <div class="thumb" data-index="@i"
+                             style="width: 80px; height: 80px; cursor: pointer; border: 2px solid transparent;"
+                             onclick="selectImage(@i)">
+                            <img src="@Url.Content("~/Content/HinhAnhSP/" + images[i])"
+                                 style="width: 100%; height: 80%; object-fit: cover;" />
+                        </div>
+                    }
+                }
+            }
+        </div>
     </div>
-    
+
     <div class="col-md-7 single-top-in simpleCart_shelfItem">
-        <div class="single-para " >
+        <div class="single-para">
             <h4>@Model.TenSP</h4>
             <div class="star-on">
                 <ul class="star-footer">
@@ -49,7 +54,9 @@
                     <li><a href="#"><i> </i></a></li>
                     <li><a href="#"><i> </i></a></li>
                 </ul>
-                <div class="review"> <a href="#"> @Model.LuotXem Lượt xem</a> </div>
+                <div class="review">
+                    <a href="#"> @Model.LuotXem Lượt xem</a>
+                </div>
                 <div class="clearfix"> </div>
             </div>
             <h5 class="item_price">Giá: @Model.DonGia.Value.ToString("#,##") VNĐ</h5>
@@ -64,6 +71,7 @@
 
     <div class="clearfix"> </div>
 
+    <!-- Rest of your content... -->
     <div class="cd-tabs">
         <nav>
             <ul class="cd-tabs-navigation">
@@ -91,11 +99,100 @@
                     </div>
                 </div>
             </li>
-            
             <div class="clearfix"></div>
         </ul>
     </div>
 
 </div>
 
+<style>
+    .thumb {
+        transition: all 0.3s ease;
+    }
 
+    .thumb:hover {
+        transform: scale(1.05);
+    }
+
+    .thumb.active {
+        border-color: #007bff !important;
+    }
+
+    .nav-arrow {
+        transition: all 0.3s ease;
+        opacity: 0.7;
+    }
+
+    .nav-arrow:hover {
+        opacity: 1;
+    }
+
+    .main-image {
+        transition: transform 0.3s ease;
+    }
+
+    /* Zoom effect on hover */
+    .product-image:hover .main-image {
+        transform: scale(1.1);
+    }
+
+    /* Hide arrows on mobile */
+    @@media (max-width: 768px) {
+        .nav-arrows {
+            display: none !important;
+        }
+    }
+
+    /* Responsive thumbnails */
+    @@media (max-width: 576px) {
+        .product-thumbnails .thumb {
+            width: 60px !important;
+            height: 60px !important;
+        }
+    }
+</style>
+
+<script>
+    let currentImageIndex = 0;
+    const images = @Html.Raw(Json.Encode(new [] { Model.HinhAnh1, Model.HinhAnh2, Model.HinhAnh3, Model.HinhAnh4 }
+        .Where(img => !string.IsNullOrEmpty(img))
+        .Select(img => Url.Content("~/Content/HinhAnhSP/" + img))));
+
+    function changeImage(direction) {
+        currentImageIndex = (currentImageIndex + direction + images.length) % images.length;
+        updateImage();
+    }
+
+    function selectImage(index) {
+        currentImageIndex = index;
+        updateImage();
+    }
+
+    function updateImage() {
+        // Update main image
+        document.querySelector('.main-image').src = images[currentImageIndex];
+
+        // Update thumbnail selection
+        document.querySelectorAll('.thumb').forEach((thumb, index) => {
+            if (index === currentImageIndex) {
+                thumb.classList.add('active');
+            } else {
+                thumb.classList.remove('active');
+            }
+        });
+    }
+
+    // Initialize first thumbnail as active
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelector('.thumb').classList.add('active');
+    });
+
+    // Optional: Add keyboard navigation
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowLeft') {
+            changeImage(-1);
+        } else if (e.key === 'ArrowRight') {
+            changeImage(1);
+        }
+    });
+</script>
