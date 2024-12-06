@@ -62,6 +62,27 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
             margin: 0.3em 0 1em;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
+        /* Contact icons CSS */
+        .contact-icons {
+            position: fixed;
+            right: 20px;
+            bottom: 100px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+            .contact-icons .icon img {
+                width: 50px;
+                height: 50px;
+                cursor: pointer;
+                transition: transform 0.3s ease;
+            }
+
+                .contact-icons .icon img:hover {
+                    transform: scale(1.1);
+                }
     </style>
     <!-- Banner -->
     <div class="banner">
@@ -111,6 +132,21 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
         @RenderBody()
 
     </div>
+    <!-- Contact icons -->
+    <div class="contact-icons">
+        <!-- Google Maps -->
+        <a href="https://www.google.com/maps/place/568+L%C3%AA+V%C4%83n+Vi%E1%BB%87t,+Long+Th%E1%BA%A1nh+M%E1%BB%B9,+Qu%E1%BA%ADn+9,+H%E1%BB%93+Ch%C3%AD+Minh+700000,+Vietnam/@10.8495255,106.8117503,17z/data=!4m6!3m5!1s0x31752749f5201ebd:0x52a86e5615f6b86c!8m2!3d10.8495255!4d106.8117503!16s%2Fg%2F11fy_d8mhr?entry=ttu&g_ep=EgoyMDI0MTIwMy4wIKXMDSoASAFQAw%3D%3D" target="_blank" class="icon google-maps" title="Google Maps">
+            <img src="/Content/images/google-maps-icon.png" alt="Google Maps">
+        </a>
+        <!-- Messenger -->
+        <a href="https://l.facebook.com/l.php?u=http%3A%2F%2Fmessenger.com%2Ft%2F111180713845340&h=AT1uPsuwU_ONOcP8OexH_qTqWtX_mCG0j-OlHoduk41ZHTqnOBLgwn_BATZhhukqsiJg8LEHjDwrSexAFsXlpNIs99-5Tz-plpkuinohRZjBGf1QVT-6X8XMiO6cqfv-FjFrfG7FfA8ua04yoq1uLw" target="_blank" class="icon messenger" title="Messenger">
+            <img src="/Content/images/messenger-icon.png" alt="Messenger">
+        </a>
+        <!-- Zalo -->
+        <a href="https://zalo.me/0344427010" target="_blank" class="icon zalo" title="Zalo">
+            <img src="/Content/images/zalo-icon.png" alt="Zalo">
+        </a>
+    </div>
     <!-- #region Phần footer -->
     <div class="footer">
         <div class="container">
@@ -150,5 +186,13 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
         </div>
     </div>
     <!-- #endregion -->
+    <script>
+        // Optional JavaScript for handling events
+        document.querySelectorAll('.contact-icons .icon').forEach(icon => {
+            icon.addEventListener('click', () => {
+                console.log(`Clicked on: ${icon.title}`);
+            });
+        });
+    </script>
 </body>
 </html>

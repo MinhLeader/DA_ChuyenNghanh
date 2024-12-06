@@ -1929,6 +1929,7 @@
     <Content Include="Content\images\blog-4.jpg" />
     <Content Include="Content\images\butxoa.jpg" />
     <Content Include="Content\images\check.png" />
+    <Content Include="Content\images\google-maps-icon.png" />
     <Content Include="Content\images\lo.png" />
     <Content Include="Content\images\lo1.png" />
     <Content Include="Content\images\lo2.png" />
@@ -1936,10 +1937,12 @@
     <Content Include="Content\images\lo4.png" />
     <Content Include="Content\images\logocompany.png" />
     <Content Include="Content\images\logocompany2.png" />
+    <Content Include="Content\images\messenger-icon.png" />
     <Content Include="Content\images\pi1.jpg" />
     <Content Include="Content\images\pi5.jpg" />
     <Content Include="Content\images\rich.jpg" />
     <Content Include="Content\images\tick1.png" />
+    <Content Include="Content\images\zalo-icon.png" />
     <Content Include="Content\js\jquery.flexslider.js" />
     <Content Include="Content\js\jquery.min.js" />
     <Content Include="Content\js\main.js" />
