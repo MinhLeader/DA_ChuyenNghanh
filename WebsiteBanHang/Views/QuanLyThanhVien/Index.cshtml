@@ -7,12 +7,39 @@
     WebGrid grid = new WebGrid(source: Model, rowsPerPage: 10);
 }
 
-<h2>@ViewBag.Title</h2>
+<h2 class="mb-4">@ViewBag.Title</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
 <div class="card">
     <div class="card-body">
+        <!-- Thanh tìm kiếm -->
+        <div class="row mb-3">
+            <div class="col-md-8">
+                <input type="text" id="search" class="form-control" placeholder="Tìm kiếm theo tên hoặc tài khoản..." />
+            </div>
+            <div class="col-md-4">
+                <button id="btnSearch" class="btn btn-primary">Tìm kiếm</button>
+            </div>
+        </div>
+
+        <!-- Nút thêm mới -->
         <p>
-            @Html.ActionLink("Thêm mới", "TaoMoi", null, htmlAttributes: new { @class = "btn btn-sm btn-warning font-weight-bold " })
+            @Html.ActionLink("Thêm mới", "TaoMoi", null, htmlAttributes: new { @class = "btn btn-warning font-weight-bold" })
         </p>
+
+        <!-- Danh sách thành viên -->
         @if (grid != null)
         {
             <div id="list" class="table-responsive">
@@ -30,11 +57,36 @@
                     grid.Column("Email", "Email"),
                     grid.Column("SoDienThoai", "SĐT"),
                     grid.Column("LoaiThanhVien.TenLoai", "Loại TV"),
-                    grid.Column(format: p => Html.ActionLink("Chỉnh sửa", "ChinhSua", new { id = p.MaThanhVien })),
-                    grid.Column(format: p => Html.ActionLink("Xóa", "Xoa", new { id = p.MaThanhVien }))
+                    grid.Column(format: p => Html.ActionLink("Chỉnh sửa", "ChinhSua", new { id = p.MaThanhVien }, new { @class = "btn btn-sm btn-info" })),
+                    grid.Column(format: p => Html.ActionLink("Xóa", "Xoa", new { id = p.MaThanhVien }, new { @class = "btn btn-sm btn-danger" }))
                     )
                 )
             </div>
         }
     </div>
 </div>
+
+<script>
+    document.getElementById('btnSearch').addEventListener('click', function () {
+        const searchQuery = document.getElementById('search').value.trim();
+        if (searchQuery) {
+            // Điều hướng đến phương thức TimKiem, trả lại trang Index kèm kết quả tìm kiếm
+            window.location.href = `/QuanLyThanhVien/TimKiem?query=${encodeURIComponent(searchQuery)}`;
+        } else {
+            alert("Vui lòng nhập từ khóa tìm kiếm!");
+        }
+    });
+
+    // Tự động ẩn thông báo sau 5 giây (5000ms)
+    setTimeout(function () {
+        const successMessage = document.getElementById('successMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        if (successMessage) {
+            successMessage.style.display = 'none';
+        }
+        if (errorMessage) {
+            errorMessage.style.display = 'none';
+        }
+    }, 5000); // Thời gian tính bằng milliseconds
+
+</script>

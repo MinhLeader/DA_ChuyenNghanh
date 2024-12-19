@@ -1,96 +1,136 @@
 ﻿@model WebsiteBanHang.Models.ThanhVien
 @{
-    ViewBag.Title = "Quản lý thành viên";
+    ViewBag.Title = "Chỉnh sửa thành viên";
     Layout = "~/Views/Layout/AdminLayout.cshtml";
 }
 
 <h4>@Html.ActionLink("Quản lý thành viên", "Index") > Chỉnh sửa</h4>
+
 <div class="card">
     <div class="card-body">
-        @using (Html.BeginForm("ChinhSua", "QuanLyThanhVien", FormMethod.Post))
+        <h4 class="card-title">Chỉnh sửa thành viên</h4>
+
+        @using (Html.BeginForm("ChinhSua", "QuanLyThanhVien", FormMethod.Post, new { enctype = "multipart/form-data" }))
         {
             @Html.AntiForgeryToken()
-        <div class="form-horizontal">
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-            @Html.Hidden("MaThanhVien", Model.MaThanhVien)
 
-            <div class="form-group row">
-                @Html.LabelFor(model => model.TaiKhoan, htmlAttributes: new { @class = "col-form-label font-weight-bold col-sm-2" })
-                <div class="col-md-6">
-                    @Html.EditorFor(model => model.TaiKhoan, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.TaiKhoan, "", new { @class = "text-danger" })
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                @Html.HiddenFor(model => model.MaThanhVien)
+
+                <div class="form-group row">
+                    @Html.LabelFor(model => model.TaiKhoan, htmlAttributes: new { @class = "col-form-label font-weight-bold col-sm-2" })
+                    <div class="col-md-6">
+                        @Html.EditorFor(model => model.TaiKhoan, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.TaiKhoan, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    @Html.LabelFor(model => model.MatKhau, htmlAttributes: new { @class = "col-form-label font-weight-bold col-sm-2" })
+                    <div class="col-md-6">
+                        @Html.EditorFor(model => model.MatKhau, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.MatKhau, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    @Html.LabelFor(model => model.HoTen, htmlAttributes: new { @class = "col-form-label font-weight-bold col-sm-2" })
+                    <div class="col-md-6">
+                        @Html.EditorFor(model => model.HoTen, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.HoTen, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    @Html.LabelFor(model => model.DiaChi, htmlAttributes: new { @class = "col-form-label font-weight-bold col-sm-2" })
+                    <div class="col-md-6">
+                        @Html.EditorFor(model => model.DiaChi, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.DiaChi, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "col-form-label font-weight-bold col-sm-2" })
+                    <div class="col-md-6">
+                        @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    @Html.LabelFor(model => model.SoDienThoai, htmlAttributes: new { @class = "col-form-label font-weight-bold col-sm-2" })
+                    <div class="col-md-6">
+                        @Html.EditorFor(model => model.SoDienThoai, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.SoDienThoai, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    @Html.LabelFor(model => model.CauHoi, htmlAttributes: new { @class = "col-form-label font-weight-bold col-sm-2" })
+                    <div class="col-md-6">
+                        @Html.DropDownList("CauHoi", null, new { @class = "form-control" })
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    @Html.LabelFor(model => model.CauTraLoi, htmlAttributes: new { @class = "col-form-label font-weight-bold col-sm-2" })
+                    <div class="col-md-6">
+                        @Html.EditorFor(model => model.CauTraLoi, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.CauTraLoi, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    @Html.LabelFor(model => model.MaLoaiTV, htmlAttributes: new { @class = "col-form-label font-weight-bold col-sm-2" })
+                    <div class="col-md-6">
+                        @Html.DropDownList("MaLoaiTV", null, new { @class = "form-control" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="FaceImage" class="control-label col-md-2">Face Image</label>
+                    <div class="col-md-10">
+                        <input type="file" name="FaceImage" accept="image/*" id="FaceImage" />
+                        @Html.ValidationMessage("FaceImage", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-md-offset-2 col-md-6 mt-3">
+                        <input type="submit" value="Lưu thay đổi" class="btn btn-sm btn-primary font-weight-bold w-25" />
+                        @Html.ActionLink("Trở về", "Index", null, htmlAttributes: new { @class = "btn btn-sm btn-secondary font-weight-bold w-25" })
+                    </div>
                 </div>
             </div>
-
-            <div class="form-group row">
-                @Html.LabelFor(model => model.MatKhau, htmlAttributes: new { @class = "col-form-label font-weight-bold col-sm-2" })
-                <div class="col-md-6">
-                    @Html.EditorFor(model => model.MatKhau, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.MatKhau, "", new { @class = "text-danger" })
-                </div>
-            </div>
-
-            <div class="form-group row">
-                @Html.LabelFor(model => model.HoTen, htmlAttributes: new { @class = "col-form-label font-weight-bold col-sm-2" })
-                <div class="col-md-6">
-                    @Html.EditorFor(model => model.HoTen, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.HoTen, "", new { @class = "text-danger" })
-                </div>
-            </div>
-
-            <div class="form-group row">
-                @Html.LabelFor(model => model.DiaChi, htmlAttributes: new { @class = "col-form-label font-weight-bold col-sm-2" })
-                <div class="col-md-6">
-                    @Html.EditorFor(model => model.DiaChi, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.DiaChi, "", new { @class = "text-danger" })
-                </div>
-            </div>
-
-            <div class="form-group row">
-                @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "col-form-label font-weight-bold col-sm-2" })
-                <div class="col-md-6">
-                    @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
-                </div>
-            </div>
-
-            <div class="form-group row">
-                @Html.LabelFor(model => model.SoDienThoai, htmlAttributes: new { @class = "col-form-label font-weight-bold col-sm-2" })
-                <div class="col-md-6">
-                    @Html.EditorFor(model => model.SoDienThoai, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.SoDienThoai, "", new { @class = "text-danger" })
-                </div>
-            </div>
-
-            <div class="form-group row">
-                @Html.LabelFor(model => model.CauHoi, htmlAttributes: new { @class = "col-form-label font-weight-bold col-sm-2" })
-                <div class="col-md-6">
-                    @Html.DropDownList("CauHoi", null, new { @class = "form-control" })
-                </div>
-            </div>
-
-            <div class="form-group row">
-                @Html.LabelFor(model => model.CauTraLoi, htmlAttributes: new { @class = "col-form-label font-weight-bold col-sm-2" })
-                <div class="col-md-6">
-                    @Html.EditorFor(model => model.CauTraLoi, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.CauTraLoi, "", new { @class = "text-danger" })
-                </div>
-            </div>
-
-            <div class="form-group row">
-                @Html.LabelFor(model => model.MaLoaiTV, htmlAttributes: new { @class = "col-form-label font-weight-bold col-sm-2" })
-                <div class="col-md-6">
-                    @Html.DropDownList("MaLoaiTV", null, new { @class = "form-control" })
-                </div>
-            </div>
-
-            <div class="form-group row ">
-                <div class="col-sm-4 mt-3">
-                    <input type="submit" value="Chỉnh sửa" class="btn btn-sm btn-primary font-weight-bold w-25" />
-                    @Html.ActionLink("Trở về", "Index", null, htmlAttributes: new { @class = "btn btn-sm btn-secondary font-weight-bold w-25" })
-                </div>
-            </div>
-        </div>
         }
     </div>
 </div>
+<script>
+        $(document).ready(function () {
+        if ("@Model.FaceEncoding" != "") {
+            $("#previewImage").attr("src", "data:image/png;base64," + "@Model.FaceEncoding");
+        }
+
+    });
+</script>
+@*Giống với phần Tạo mới*@
+<script>
+    //Xem trước ảnh
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                $('#previewImage').attr('src', e.target.result);
+            }
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    // Gọi hàm xem trước khi chọn file
+    $("[name='FaceImage']").change(function () {
+        readURL(this);
+    });
+</script>

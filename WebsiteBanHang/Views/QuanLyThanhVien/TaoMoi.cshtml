@@ -8,7 +8,7 @@
 <div class="card">
     <div class="card-body">
         <h4 class="card-title">Tạo mới thành viên</h4>
-        @using (Html.BeginForm("TaoMoi", "QuanLyThanhVien", FormMethod.Post))
+        @using (Html.BeginForm("TaoMoi", "QuanLyThanhVien", FormMethod.Post, new { enctype = "multipart/form-data" }))
         {
             @Html.AntiForgeryToken()
             <div class="form-horizontal">
@@ -90,7 +90,34 @@
                         @Html.ActionLink("Trở về", "Index", null, htmlAttributes: new { @class = "btn btn-sm btn-secondary font-weight-bold w-25" })
                     </div>
                 </div>
+
+                <div class="form-group">
+                    <label for="FaceImage" class="control-label col-md-2">Face Image</label>
+                    <div class="col-md-10">
+                        <input type="file" name="FaceImage" accept="image/*" id="FaceImage" />
+                        @Html.ValidationMessage("FaceImage", new { @class = "text-danger" })
+                    </div>
+                </div>
             </div>
         }
     </div>
 </div>
+<script>
+    // Hàm xem trước ảnh
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                $('#previewImage').attr('src', e.target.result);
+            }
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    // Gọi hàm xem trước khi chọn file
+    $("[name='FaceImage']").change(function () {
+        readURL(this);
+    });
+</script>

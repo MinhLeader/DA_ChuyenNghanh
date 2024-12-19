@@ -83,6 +83,7 @@
         <div class="form-info">
             @using (Ajax.BeginForm("DangNhap", "Home", new AjaxOptions { HttpMethod = "POST", InsertionMode = InsertionMode.Replace, UpdateTargetId = "ThongBao" }))
             {
+                @Html.AntiForgeryToken()
                 <input type="text" class="form-input" name="txtTenDangNhap" placeholder="Tên đăng nhập" required />
                 <input type="password" class="form-input" name="txtMatKhau" placeholder="Mật khẩu" required />
                 <p class="forgot-password"><a href="#">Quên mật khẩu?</a></p>
@@ -90,6 +91,13 @@
                 <div class="login-buttons">
                     <button type="submit" class="auth-btn login-btn">Đăng nhập</button>
                     <a href="@Url.Action("DangKy", "Home")" class="auth-btn register-btn">Đăng ký</a>
+                </div>
+                <div>
+                    <video id="video" width="320" height="240" autoplay style="display: none;"></video>
+                    <button id="captureBtn" type="button">Chụp ảnh</button>
+                    <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+                    <div id="message" style="color: red"></div>
+                    <img id="capturedImage" width="320" height="240" style="display: none;" />
                 </div>
             }
         </div>
@@ -117,7 +125,7 @@
     .header-top {
         background-color: #ef5f21;
         box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-/*        padding: 15px 0;*/
+        /*        padding: 15px 0;*/
         position: sticky;
         top: 0;
         z-index: 1000;
@@ -416,10 +424,16 @@
         $("#btnDangNhap").click(function (e) {
             e.preventDefault();
             $("#popup_login").show();
+            video.style.display = 'block'; // Hiện video
+            captureBtn.style.display = 'block'; // Hiện nút chụp
         });
 
         $("#close-form").click(function () {
             $("#popup_login").hide();
+             video.style.display = 'none'; // Ẩn video
+             captureBtn.style.display = 'none'; // Ẩn nút chụp
+                // Xóa thông báo
+             messageDiv.innerText = "";
         });
 
         // Close popup when clicking outside
@@ -440,5 +454,78 @@
                 }
             });
         });
+    });
+    let stream = null;
+    (function () {
+        var video = document.getElementById('video');
+        var canvas = document.getElementById('canvas');
+        var context = canvas.getContext('2d');
+        var captureBtn = document.getElementById('captureBtn');
+        var messageDiv = document.getElementById('message');
+        var capturedImage = document.getElementById('capturedImage');
+        stream = null;
+
+        // Truy cập camera
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(function (mediaStream) {
+                video.srcObject = mediaStream;
+                stream = mediaStream
+            })
+            .catch(function (err) {
+                console.log("Lỗi truy cập camera: ", err);
+                messageDiv.innerText = "Lỗi truy cập camera.";
+            });
+
+        // Chụp ảnh
+        captureBtn.addEventListener('click', function () {
+            context.drawImage(video, 0, 0, 320, 240);
+
+            // Hiển thị ảnh đã chụp
+            var dataURL = canvas.toDataURL('image/jpeg');
+            capturedImage.src = dataURL;
+            capturedImage.style.display = 'block';
+            messageDiv.innerText = "";
+
+            // Gửi ảnh lên server
+            canvas.toBlob(function (blob) {
+                var formData = new FormData();
+                formData.append('image', blob);
+
+                $.ajax({
+                    url: '@Url.Action("DangNhapFaceRecognition", "Home")',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        if (data.success) {
+                            // Nhận diện thành công
+                            messageDiv.innerText = data.message;
+                            window.location.href = '@Url.Action("Index", "ThongKe")';
+                            // Ẩn form đăng nhập
+                            $("#popup_login").hide();
+                        } else {
+                            // Không nhận diện được
+                            messageDiv.innerText = data.message || 'Không nhận diện được khuôn mặt.';
+                        }
+                    },
+                    error: function (err) {
+                        console.log(err);
+                        // Hiển thị thông tin lỗi chi tiết hơn trong console
+                        console.log("responseText: " + err.responseText);
+                        console.log("status: " + err.status);
+                        console.log("statusText: " + err.statusText);
+                        messageDiv.innerText = "Lỗi server: " + err.status + " - " + err.statusText;
+                    }
+                });
+            }, 'image/jpeg');
+        });
+    })();
+
+    //giải phóng camera khi rời khỏi trang
+    window.addEventListener('beforeunload', function () {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
     });
 </script>

@@ -7,14 +7,18 @@ using WebsiteBanHang.Models;
 using System.Web.Security;
 using CaptchaMvc.HtmlHelpers;
 using CaptchaMvc;
+using FaceRecognitionDotNet;
+using System.IO;
+using System.Data.Entity.Validation;
 
 namespace WebsiteBanHang.Controllers
 {
-
     public class HomeController : Controller
     {
         QuanLyBanHangEntities db = new QuanLyBanHangEntities();
-        
+        private static readonly string ModelsDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Models");
+        private static readonly FaceRecognition _faceRecognition = FaceRecognition.Create(ModelsDirectory);
+
         // GET: Home/Index
         public ActionResult Index()
         {
@@ -76,39 +80,28 @@ namespace WebsiteBanHang.Controllers
         }
 
         //Load câu hỏi để đưa vào dropdownlist
-        public List<string> LoadCauHoi()    
+        public SelectList LoadCauHoi()
         {
-            List<string> lstCauHoi = new List<string>();    //tạo list câu hỏi chứa câu hỏi
-            lstCauHoi.Add("Họ tên người cha bạn là gì?");
-            lstCauHoi.Add("Ca sĩ mà bạn yêu thích là ai?");
-            lstCauHoi.Add("Vật nuôi mà bạn yêu thích là gì?");
-            lstCauHoi.Add("Sở thích của bạn là gì");
-            lstCauHoi.Add("Hiện tại bạn đang làm công việc gì?");
-            lstCauHoi.Add("Trường cấp ba bạn học là gì?");
-            lstCauHoi.Add("Năm sinh của mẹ bạn là gì?");
-            lstCauHoi.Add("Bộ phim mà bạn yêu thích là gì?");
-            lstCauHoi.Add("Bài nhạc mà bạn yêu thích là gì?");
+            var items = new SelectList(new[]
+            {
+                "Họ tên người cha bạn là gì?",
+                "Ca sĩ mà bạn yêu thích là ai?",
+                "Vật nuôi mà bạn yêu thích là gì?",
+                "Sở thích của bạn là gì",
+                "Hiện tại bạn đang làm công việc gì?",
+                "Trường cấp ba bạn học là gì?",
+                "Năm sinh của mẹ bạn là gì?",
+                "Bộ phim mà bạn yêu thích là gì?",
+                "Bài nhạc mà bạn yêu thích là gì?",
+             });
 
-            return lstCauHoi;
+            return items;
         }
 
         //xd action dang nhap
         [HttpPost]
         public ActionResult DangNhap(FormCollection f)
         {
-            ////ktra tên dn và pass
-            //string sTaiKhoan = f["txtTenDangNhap"].ToString();  //lấy chuỗi trong txtTenDangNhap
-            //string sMatKhau = f["txtMatKhau"].ToString();   //lấy chuỗi trong txtMatKhau
-
-            //ThanhVien tv = db.ThanhViens.SingleOrDefault(n => n.TaiKhoan == sTaiKhoan && n.MatKhau == sMatKhau);    //so sánh với tk và mk trong csdl
-            //if(tv != null)
-            //{
-            //    Session["TaiKhoan"] = tv;   //tạo session tên TaiKhoan với giá trị là biến tv
-            //    return Content(@"<script>window.location.reload()</script>");   //đoạn script dùng để reload lại trang khi đăng nhập thành công
-            //}
-            //// khi đăng nhập sai xuất thông báo
-            //return Content("Tài khoản hoặc mật khẩu không chính xác.");
-
             //ktra tên dn và pass
             string taikhoan = f["txtTenDangNhap"].ToString();   //lấy chuỗi trong txtTenDangNhap
             string matKhau = f["txtMatKhau"].ToString();    //lấy chuỗi trong txtMatKhau
@@ -134,14 +127,81 @@ namespace WebsiteBanHang.Controllers
             return Content("Tài khoản hoặc mật khẩu không chính xác.");
         }
 
-        
+        // Xử lý nhận diện khuôn mặt để đăng nhập
+        [HttpPost]
+        public ActionResult DangNhapFaceRecognition(HttpPostedFileBase image)
+        {
+            if (image == null || image.ContentLength == 0)
+            {
+                return Json(new { success = false, message = "Không nhận được ảnh." });
+            }
 
+            try
+            {
+                // Tạo thư mục tạm nếu chưa có
+                var tempFolderPath = Server.MapPath("~/Temp");
+                Directory.CreateDirectory(tempFolderPath); // Đảm bảo thư mục tồn tại
+
+                // Lưu ảnh vào thư mục tạm
+                var fileName = Path.GetFileName(image.FileName);
+                var tempImagePath = Path.Combine(tempFolderPath, fileName);
+                image.SaveAs(tempImagePath);
+
+                // Trích xuất encoding
+                var encoding = GetFaceEncodingFromImage(tempImagePath);
+
+                // Xóa ảnh tạm
+                DeleteTempImage(tempImagePath);
+
+                if (string.IsNullOrEmpty(encoding))
+                {
+                    return Json(new { success = false, message = "Không nhận diện được khuôn mặt." });
+                }
+
+                // So sánh encoding với các thành viên trong database
+                var thanhVien = TimThanhVienTheoEncoding(encoding);
+
+                if (thanhVien != null)
+                {
+                    // Kiểm tra quyền của thành viên
+                    var lstQuyen = db.LoaiThanhVien_Quyen.Where(n => n.MaLoaiTV == thanhVien.MaLoaiTV);
+                    string Quyen = "";
+                    if (lstQuyen.Count() != 0)
+                    {
+                        foreach (var item in lstQuyen)
+                        {
+                            Quyen += item.Quyen.MaQuyen + ",";
+                        }
+                        Quyen = Quyen.Substring(0, Quyen.Length - 1);
+                        PhanQuyen(thanhVien.TaiKhoan.ToString(), Quyen);
+
+                        Session["TaiKhoan"] = thanhVien;
+                        // Trả về thông báo thành công
+                        return Json(new { success = true, message = "Đăng nhập thành công." });
+                    }
+                    else
+                    {
+                        return Json(new { success = false, message = "Tài khoản không có quyền truy cập." });
+                    }
+                }
+                else
+                {
+                    // Không tìm thấy thành viên
+                    return Json(new { success = false, message = "Không tìm thấy thành viên khớp với khuôn mặt." });
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return Json(new { success = false, message = "Lỗi: " + ex.Message });
+            }
+        }
 
         public ActionResult DangXuat()
         {
-            Session["TaiKhoan"] = null; //thiết lập session là null
+            Session["TaiKhoan"] = null;
 
-            FormsAuthentication.SignOut();  //xóa bộ nhớ cookie
+            FormsAuthentication.SignOut();  //Xóa Forms Authentication cookie
 
             return RedirectToAction("Index");
         }
@@ -151,12 +211,12 @@ namespace WebsiteBanHang.Controllers
             return View();
         }
 
-        public void PhanQuyen(string Taikhoan, string Quyen)
+        public void PhanQuyen(string TaiKhoan, string Quyen)
         {
             FormsAuthentication.Initialize();
 
             var ticket = new FormsAuthenticationTicket(1,
-                                            Taikhoan,   //đặt tên ticket theo tên tk 
+                                            TaiKhoan,   //đặt tên ticket theo tên tk 
                                             DateTime.Now,   //lấy tgian bắt đầu
                                             DateTime.Now.AddHours(3),   //thời gian 3 tiếng out ra
                                             false,  //ko lưu
@@ -165,6 +225,130 @@ namespace WebsiteBanHang.Controllers
             var cookie = new HttpCookie(FormsAuthentication.FormsCookieName, FormsAuthentication.Encrypt(ticket));  //tạo cookie(tự tạo name, mã hóa thông tin ticket add vào cookie)
             if (ticket.IsPersistent) cookie.Expires = ticket.Expiration;    //ktra cookie có chưa
             Response.Cookies.Add(cookie);     //
+        }
+
+        //bổ sung hàm giống với code ở QuanLyThanhVien
+        private string GetFaceEncodingFromImage(string imagePath)
+        {
+            try
+            {
+                using (var image = FaceRecognition.LoadImageFile(imagePath))
+                {
+                    var faceLocations = _faceRecognition.FaceLocations(image).ToArray();
+
+                    // Thêm log để kiểm tra số lượng khuôn mặt
+                    Console.WriteLine($"Số khuôn mặt tìm thấy: {faceLocations.Length}");
+
+                    if (faceLocations.Length == 0)
+                    {
+                        // Thêm log chi tiết
+                        Console.WriteLine("Không tìm thấy khuôn mặt trong ảnh");
+                        return null;
+                    }
+
+                    var faceEncodings = _faceRecognition.FaceEncodings(image, faceLocations).ToArray();
+
+                    // Thêm log để kiểm tra số lượng encoding
+                    Console.WriteLine($"Số encoding tìm thấy: {faceEncodings.Length}");
+
+                    if (faceEncodings.Length == 0)
+                    {
+                        Console.WriteLine("Không thể trích xuất đặc trưng khuôn mặt");
+                        return null;
+                    }
+
+                    var encoding = faceEncodings.FirstOrDefault();
+
+                    if (encoding == null)
+                    {
+                        Console.WriteLine("Encoding là null");
+                        return null;
+                    }
+
+                    // Chuyển đổi encoding sang base64
+                    var rawEncoding = encoding.GetRawEncoding();
+                    var stringEncoding = string.Join(",", rawEncoding);
+                    return stringEncoding;
+                }
+            }
+            catch (Exception ex)
+            {
+                // Ghi log đầy đủ thông tin lỗi
+                Console.WriteLine($"Lỗi nhận diện khuôn mặt: {ex.Message}");
+                Console.WriteLine($"Chi tiết lỗi: {ex.StackTrace}");
+                return null;
+            }
+        }
+
+        private ThanhVien TimThanhVienTheoEncoding(string encoding)
+        {
+            var encodingArray = ConvertStringToDoubleArray(encoding);
+
+            var thanhViens = db.ThanhViens.ToList();
+
+            foreach (var tv in thanhViens)
+            {
+                if (!string.IsNullOrEmpty(tv.FaceEncoding))
+                {
+                    var tvEncodingArray = ConvertStringToDoubleArray(tv.FaceEncoding);
+
+                    if (AreEncodingsSimilar(encodingArray, tvEncodingArray))
+                    {
+                        return tv;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private double[] ConvertStringToDoubleArray(string encodingString)
+        {
+            if (string.IsNullOrEmpty(encodingString))
+                return new double[0];
+
+            try
+            {
+                return encodingString.Split(',').Select(double.Parse).ToArray();
+            }
+            catch (FormatException ex)
+            {
+                Console.WriteLine($"Lỗi định dạng khi chuyển đổi encoding: {ex.Message}");
+                return new double[0];
+            }
+        }
+
+        private bool AreEncodingsSimilar(double[] encoding1, double[] encoding2, double tolerance = 0.4)
+        {
+            if (encoding1.Length != encoding2.Length)
+            {
+                return false;
+            }
+
+            // Tính khoảng cách Euclidean
+            var distance = Math.Sqrt(encoding1.Zip(encoding2, (a, b) => (a - b) * (a - b)).Sum());
+
+            // Giảm ngưỡng tolerance để tăng độ chính xác
+            return distance < tolerance;
+        }
+
+        private bool IsValidFaceImage(string imagePath)
+        {
+            using (var image = FaceRecognition.LoadImageFile(imagePath))
+            {
+                var faceLocations = _faceRecognition.FaceLocations(image).ToArray();
+
+                // Chỉ chấp nhận ảnh có duy nhất 1 khuôn mặt
+                return faceLocations.Length == 1;
+            }
+        }
+
+        private void DeleteTempImage(string imagePath)
+        {
+            if (System.IO.File.Exists(imagePath))
+            {
+                System.IO.File.Delete(imagePath);
+            }
         }
 
         //Giải phóng dung lượng biến db, để ở cuối controller

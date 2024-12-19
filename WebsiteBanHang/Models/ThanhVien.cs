@@ -31,6 +31,8 @@ namespace WebsiteBanHang.Models
         public string CauHoi { get; set; }
         public string CauTraLoi { get; set; }
         public Nullable<int> MaLoaiTV { get; set; }
+        public string FaceEncoding { get; set; }
+        public string FaceImagePath { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BinhLuan> BinhLuans { get; set; }

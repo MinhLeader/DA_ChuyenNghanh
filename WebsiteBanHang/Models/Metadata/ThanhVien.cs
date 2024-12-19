@@ -5,16 +5,16 @@ using System.Web;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 
-namespace WebsiteBanHang.Models         //phải cùng namespace với class trong Model
+namespace WebsiteBanHang.Models
 {
+
     [MetadataTypeAttribute(typeof(ThanhVienMetadata))]
-    //liên kết class tv này với class tv trong Model (vì nếu update Model.edmx thì validation trong class tv của model sẽ mất hết)
-    public partial class ThanhVien      
+    public partial class ThanhVien
     {
+
         internal sealed class ThanhVienMetadata
         {
             public int MaThanhVien { get; set; }
-
             [DisplayName("Tài khoản")]
             [StringLength(100, ErrorMessage = "Tên tài khoản không quá 100 kí tự.")]
             [Required(ErrorMessage = "Hãy nhập tên {0}.")]
@@ -52,6 +52,9 @@ namespace WebsiteBanHang.Models         //phải cùng namespace với class tro
             [Required(ErrorMessage = "Hãy nhập mật khẩu.")]
             public string MatKhau { get; set; }
 
+            [Display(Name = "Mã nhận dạng khuôn mặt")]
+            [StringLength(maximumLength: int.MaxValue)]
+            public string FaceEncoding { get; set; }
         }
     }
 }
