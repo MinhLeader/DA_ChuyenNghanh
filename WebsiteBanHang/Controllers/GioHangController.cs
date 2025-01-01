@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using WebsiteBanHang.Models;
+using WebsiteBanHang.Common; // Thêm namespace cho VnPayLibrary
 
 namespace WebsiteBanHang.Controllers
 {
@@ -167,65 +168,155 @@ namespace WebsiteBanHang.Controllers
         //chức năng đặt hàng
         public ActionResult DatHang(KhachHang kh)
         {
-            //ktra session giỏ hàng có tồn tại ko
+            System.Diagnostics.Debug.WriteLine("========== BẮT ĐẦU QUY TRÌNH ĐẶT HÀNG ==========");
+
+            //kiểm tra session giỏ hàng
             if (Session["GioHang"] == null)
             {
+                System.Diagnostics.Debug.WriteLine("Không tìm thấy giỏ hàng trong session");
                 return RedirectToAction("Index", "Home");
             }
 
-            //kiểm tra từng loại khách hàng
+            // Log thông tin giỏ hàng trước khi xử lý
+            List<ItemGioHang> currentCart = Session["GioHang"] as List<ItemGioHang>;
+            System.Diagnostics.Debug.WriteLine($"Số sản phẩm trong giỏ: {currentCart?.Count ?? 0}");
+
+            //xử lý khách hàng
             KhachHang khach = new KhachHang();
-            if(Session["TaiKhoan"] == null)     //nếu session rỗng thì là khách vãng lai
+            if (Session["TaiKhoan"] == null)
             {
-                //thêm khách hàng vào bảng khách hàng đối vs khách vãng lai
-                khach = kh; //biến kh được truyền dữ liệu khi nhập thông tin vào form
-                db.KhachHangs.Add(khach);   //thêm vào bảng kh
-                db.SaveChanges();   //lưu vào db và tăng mãkh
+                System.Diagnostics.Debug.WriteLine("Khách hàng: Vãng lai");
+                khach = kh;
+                db.KhachHangs.Add(khach);
+                db.SaveChanges();
             }
             else
             {
-                //đối vs kh là thành viên
-                ThanhVien tv = (ThanhVien)Session["TaiKhoan"]; //tạo biến tv lấy dữ liệu tù session
-                khach.TenKH = tv.HoTen; //  gắn dữ liệu vào biến khách hàng
+                System.Diagnostics.Debug.WriteLine("Khách hàng: Thành viên");
+                ThanhVien tv = (ThanhVien)Session["TaiKhoan"];
+                khach.TenKH = tv.HoTen;
                 khach.DiaChi = tv.DiaChi;
                 khach.Email = tv.Email;
                 khach.SoDienThoai = tv.SoDienThoai;
-                db.KhachHangs.Add(khach);   //thêm vào bảng kh
-                db.SaveChanges();   //lưu vào db và tăng mãkh
+                db.KhachHangs.Add(khach);
+                db.SaveChanges();
             }
+            System.Diagnostics.Debug.WriteLine($"Mã khách hàng: {khach.MaKH}, Tên: {khach.TenKH}");
 
-            //thêm đơn hàng
+            //tạo đơn hàng
             DonDatHang ddh = new DonDatHang();
-
-            ddh.MaKH = int.Parse(khach.MaKH.ToString()); //thêm vào makh lấy từ kh
-            ddh.NgayDat = DateTime.Now; //lấy ngày hiện tại trên hệ thống
+            ddh.MaKH = khach.MaKH;
+            ddh.NgayDat = DateTime.Now;
             ddh.TinhTrangGiaoHang = false;
             ddh.DaThanhToan = false;
             ddh.UuDai = 0;
             ddh.DaHuy = false;
             ddh.DaXoa = false;
-            db.DonDatHangs.Add(ddh);    //thêm vào bảng dondathang giá trị ddh
-            db.SaveChanges();   //update bảng đơn đặt hàng, và tạo mã ddh dùng cho chitietddh
+            db.DonDatHangs.Add(ddh);
+            db.SaveChanges();
+            System.Diagnostics.Debug.WriteLine($"Đã tạo đơn hàng mới - Mã đơn: {ddh.MaDDH}");
 
-            //thêm chi tiết đơn đặt hàng
-            List<ItemGioHang> lstGH = LayGioHang(); //lấy list giỏ hàng
-            foreach(var item in lstGH)  //chạy vòng lập để lấy thông tin của từng sp trong giỏ hàng đưa vào chitietddh
+            //thêm chi tiết đơn hàng
+            decimal tongTienChiTiet = 0;
+            List<ItemGioHang> lstGH = LayGioHang();
+            foreach (var item in lstGH)
             {
                 ChiTietDonDatHang ctdh = new ChiTietDonDatHang();
-                ctdh.MaDDH = ddh.MaDDH; // lấy mã tù ddh đã tạo
+                ctdh.MaDDH = ddh.MaDDH;
                 ctdh.MaSP = item.MaSP;
                 ctdh.TenSP = item.TenSP;
                 ctdh.SoLuong = item.SoLuong;
                 ctdh.Dongia = item.DonGia;
+                tongTienChiTiet += item.ThanhTien;
                 db.ChiTietDonDatHangs.Add(ctdh);
-            }
-            db.SaveChanges(); //update vào bảng chi tiết đơn đặt hàng
 
-            Session["GioHang"] = null;  //sau khi thêm vào ddh thì giỏ hàng sẽ trống
-            //return RedirectToAction("XemGioHang");
-            // đặt hàng thành công sẽ trả về trang đặt hàng thành công
-            return RedirectToAction("DatHangThanhCong");
+                System.Diagnostics.Debug.WriteLine($"Chi tiết đơn hàng: SP={item.TenSP}, SL={item.SoLuong}, Đơn giá={item.DonGia}, Thành tiền={item.ThanhTien}");
+            }
+            db.SaveChanges();
+            System.Diagnostics.Debug.WriteLine($"Tổng tiền tính từ chi tiết: {tongTienChiTiet}");
+
+            // Xử lý thanh toán VNPay
+            decimal totalAmount = TinhTongTien();
+            System.Diagnostics.Debug.WriteLine($"Tổng tiền từ TinhTongTien(): {totalAmount}");
+
+            // Kiểm tra tổng tiền có khớp không
+            if (totalAmount != tongTienChiTiet)
+            {
+                System.Diagnostics.Debug.WriteLine("CẢNH BÁO: Không khớp giữa tổng tiền và chi tiết!");
+            }
+
+            string orderId = ddh.MaDDH.ToString();
+
+            // Convert to VNPay amount (nhân 100)
+            long vnpayAmount = (long)(totalAmount * 100);
+            System.Diagnostics.Debug.WriteLine($"Số tiền gửi đến VNPay (đã nhân 100): {vnpayAmount}");
+
+            Models.Payment.PaymentInformation paymentInfo = new Models.Payment.PaymentInformation()
+            {
+                Amount = (double)totalAmount,
+                OrderDescription = "Thanh toán đơn hàng #" + orderId,
+                OrderType = "other",
+                OrderId = orderId,
+                Name = khach.TenKH
+            };
+            System.Diagnostics.Debug.WriteLine($"Payment Info - Amount: {paymentInfo.Amount}, OrderId: {paymentInfo.OrderId}");
+
+            VnPayLibrary vnpay = new VnPayLibrary();
+
+            // Log tất cả các tham số VNPay
+            vnpay.AddRequestData("vnp_Version", "2.1.0");
+            vnpay.AddRequestData("vnp_Command", "pay");
+            vnpay.AddRequestData("vnp_TmnCode", System.Configuration.ConfigurationManager.AppSettings["Vnpay_TmnCode"]);
+            vnpay.AddRequestData("vnp_Amount", vnpayAmount.ToString());
+            vnpay.AddRequestData("vnp_CreateDate", DateTime.Now.ToString("yyyyMMddHHmmss"));
+            vnpay.AddRequestData("vnp_CurrCode", "VND");
+            vnpay.AddRequestData("vnp_IpAddr", GetIpAddress());
+            vnpay.AddRequestData("vnp_Locale", "vn");
+            vnpay.AddRequestData("vnp_OrderInfo", paymentInfo.OrderDescription);
+            vnpay.AddRequestData("vnp_ReturnUrl", System.Configuration.ConfigurationManager.AppSettings["Vnpay_ReturnUrl"]);
+            vnpay.AddRequestData("vnp_TxnRef", paymentInfo.OrderId);
+            vnpay.AddRequestData("vnp_OrderType", paymentInfo.OrderType);
+            vnpay.AddRequestData("vnp_Inv_Customer", paymentInfo.Name);
+
+            // Log các tham số quan trọng
+            System.Diagnostics.Debug.WriteLine($"TmnCode: {System.Configuration.ConfigurationManager.AppSettings["Vnpay_TmnCode"]}");
+            System.Diagnostics.Debug.WriteLine($"ReturnUrl: {System.Configuration.ConfigurationManager.AppSettings["Vnpay_ReturnUrl"]}");
+            System.Diagnostics.Debug.WriteLine($"IP Address: {GetIpAddress()}");
+
+            // Tạo URL thanh toán và log
+            string paymentUrl = vnpay.CreateRequestUrl(
+                System.Configuration.ConfigurationManager.AppSettings["Vnpay_Url"],
+                System.Configuration.ConfigurationManager.AppSettings["Vnpay_HashSecret"]
+            );
+            System.Diagnostics.Debug.WriteLine($"Payment URL: {paymentUrl}");
+
+            // Log hash data để kiểm tra
+            
+
+            System.Diagnostics.Debug.WriteLine("========== KẾT THÚC QUY TRÌNH ĐẶT HÀNG ==========");
+
+            // Xóa giỏ hàng
+            Session["GioHang"] = null;
+
+            return Redirect(paymentUrl);
         }
+
+        private string GetIpAddress()
+        {
+            string ipAddress = Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
+
+            if (!string.IsNullOrEmpty(ipAddress))
+            {
+                string[] addresses = ipAddress.Split(',');
+                if (addresses.Length != 0)
+                {
+                    return addresses[0];
+                }
+            }
+
+            return Request.ServerVariables["REMOTE_ADDR"];
+        }
+
 
         #region Methods
         //Lấy giỏ hàng

@@ -149,8 +149,10 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Common\VnPayLibrary.cs" />
     <Compile Include="Controllers\GioHangController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\PaymentController.cs" />
     <Compile Include="Controllers\PhanQuyenController.cs" />
     <Compile Include="Controllers\QuanLyDonHangController.cs" />
     <Compile Include="Controllers\QuanLyLoaiController.cs" />
@@ -196,6 +198,7 @@
     <Compile Include="Models\NhaSanXuat.cs">
       <DependentUpon>QuanLyBanHangModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Payment\PaymentInformation.cs" />
     <Compile Include="Models\PhieuNhap.cs">
       <DependentUpon>QuanLyBanHangModel.tt</DependentUpon>
     </Compile>
