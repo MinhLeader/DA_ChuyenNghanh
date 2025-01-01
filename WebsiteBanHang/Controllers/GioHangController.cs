@@ -12,7 +12,7 @@ namespace WebsiteBanHang.Controllers
     {
         QuanLyBanHangEntities db = new QuanLyBanHangEntities();
 
-        //Hiển thị icon giỏ hàng lên phần header
+        //Hiển thị icon giỏ hàng lên phần headerr
         public ActionResult GioHangPartial()
         {
             if (TinhTongSoLuong() == 0) //ktra soluong giỏ hàng
